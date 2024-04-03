@@ -40,7 +40,7 @@ class Biblioteca:
 
 def main():
     biblioteca = Biblioteca()
-
+    print('#'*6,'Gerenciador de Biblioteca','#'*6)
     while True:
         print("\n### Menu ###")
         print("1. Cadastrar aluno")
