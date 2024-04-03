@@ -1,89 +1,96 @@
-print("*"*8+"Bem-vindos à Biblioteca Paulo Freire"+"*"*8)
-
 class Aluno:
-    def __init__(self, nome_completo, rg, cpf, ru):
-        self.nome_completo = nome_completo
+    def __init__(self, nome, rg, cpf, telefone, ru_escola):
+        self.nome = nome
         self.rg = rg
         self.cpf = cpf
-        self.ru = ru
+        self.telefone = telefone
+        self.ru_escola = ru_escola
 
-class Livro:
-    def __init__(self, titulo, autor):
-        self.titulo = titulo
-        self.autor = autor
-        self.disponivel = True
-        self.aluno = None
+    def __str__(self):
+        return f"Nome: {self.nome}, RG: {self.rg}, CPF: {self.cpf}, Telefone: {self.telefone}, RU Escola: {self.ru_escola}"
+
 
 class Biblioteca:
     def __init__(self):
         self.livros = []
         self.alunos = []
 
-    def cadastrar_aluno(self):
-        nome_completo = input("Digite o nome completo do aluno: ")
-        rg = input("Digite o RG do aluno: ")
-        cpf = input("Digite o CPF do aluno: ")
-        ru = input("Digite o RU do aluno: ")
-        self.alunos.append(Aluno(nome_completo, rg, cpf, ru))
-        print('Aluno Cadastrado com sucesso!')
-
-    def adicionar_livro(self, livro):
+    def cadastrar_livro(self, livro):
         self.livros.append(livro)
 
-    def emprestar_livro(self, titulo, ru):
-        for livro in self.livros:
-            if livro.titulo == titulo and livro.disponivel:
-                for aluno in self.alunos:
-                    if aluno.ru == ru:
-                        livro.disponivel = False
-                        livro.aluno = aluno
-                        return True
-        return False
+    def cadastrar_aluno(self, aluno):
+        self.alunos.append(aluno)
 
-    def devolver_livro(self, titulo):
-        for livro in self.livros:
-            if livro.titulo == titulo and not livro.disponivel:
-                livro.disponivel = True
-                livro.aluno = None
-                return True
-        return False
+    def listar_livros_disponiveis(self):
+        livros_disponiveis = [livro for livro in self.livros if livro['status'] == 'Disponível']
+        return livros_disponiveis
 
-    def listar_livros(self):
-        for livro in self.livros:
-            print(f'Título: {livro.titulo}, Autor: {livro.autor}, Disponível: {"Sim" if livro.disponivel else "Não"}, Aluno: {livro.aluno.nome_completo if livro.aluno else "Nenhum"}')
+    def listar_alunos(self):
+        return self.alunos
 
-biblioteca = Biblioteca()
-biblioteca.adicionar_livro(Livro('Lógica de programação', 'Rubens'))
-biblioteca.adicionar_livro(Livro('Ferramentas de Matemática aplicada', 'Neto1'))
+    def salvar_info(self, nome_arquivo):
+        with open(nome_arquivo, 'w') as arquivo:
+            arquivo.write("### Lista de Alunos ###\n")
+            for aluno in self.alunos:
+                arquivo.write(str(aluno) + "\n\n")
+            arquivo.write("### Lista de Livros Disponíveis ###\n")
+            for livro in self.livros:
+                arquivo.write(f"Título: {livro['titulo']}, Autor: {livro['autor']}\n")
 
-while True:
-    print("\nEscolha uma opção:")
-    print("1. Cadastrar aluno")
-    print("2. Listar livros")
-    print("3. Emprestar livro")
-    print("4. Devolver livro")
-    print("5. Sair")
 
-    opcao = input("\nOpção selecionada: ")
+def main():
+    biblioteca = Biblioteca()
 
-    if opcao == "1":
-        biblioteca.cadastrar_aluno()
-    elif opcao == "2":
-        biblioteca.listar_livros()
-    elif opcao == "3":
-        titulo = input("Digite o título do livro que deseja emprestar: ")
-        ru = input("Digite o RU do aluno que está emprestando o livro: ")
-        if biblioteca.emprestar_livro(titulo, ru):
-            print("Livro emprestado com sucesso.")
+    while True:
+        print("\n### Menu ###")
+        print("1. Cadastrar aluno")
+        print("2. Listar alunos")
+        print("3. Cadastrar livro")
+        print("4. Listar livros disponíveis")
+        print("5. Salvar informações")
+        print("6. Sair")
+
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == '1':
+            nome = input("Digite o nome do aluno: ")
+            rg = input("Digite o RG do aluno: ")
+            cpf = input("Digite o CPF do aluno: ")
+            telefone = input("Digite o telefone do aluno: ")
+            ru_escola = input("Digite o RU da escola do aluno: ")
+            aluno = Aluno(nome, rg, cpf, telefone, ru_escola)
+            biblioteca.cadastrar_aluno(aluno)
+            print("Aluno cadastrado com sucesso!")
+
+        elif opcao == '2':
+            print("\nLista de Alunos:")
+            for aluno in biblioteca.listar_alunos():
+                print(aluno)
+
+        elif opcao == '3':
+            titulo = input("Digite o título do livro: ")
+            autor = input("Digite o autor do livro: ")
+            livro = {'titulo': titulo, 'autor': autor, 'status': 'Disponível'}
+            biblioteca.cadastrar_livro(livro)
+            print("Livro cadastrado com sucesso!")
+
+        elif opcao == '4':
+            print("\nLista de Livros Disponíveis:")
+            for livro in biblioteca.listar_livros_disponiveis():
+                print(f"Título: {livro['titulo']}, Autor: {livro['autor']}")
+
+        elif opcao == '5':
+            nome_arquivo = input("Digite o nome do arquivo para salvar as informações: ")
+            biblioteca.salvar_info(nome_arquivo)
+            print(f"Informações salvas no arquivo '{nome_arquivo}'")
+
+        elif opcao == '6':
+            print("Saindo...")
+            break
+
         else:
-            print("O livro não está disponível ou o aluno não está cadastrado.")
-    elif opcao == "4":
-        titulo = input("Digite o título do livro que deseja devolver: ")
-        if biblioteca.devolver_livro(titulo):
-            print("Livro devolvido com sucesso.")
-        else:
-            print("O livro não foi emprestado.")
-    elif opcao == "5":
-        break
-    else:
-        print("Opção inválida! Tente novamente.")
+            print("Opção inválida. Tente novamente.")
+
+
+if __name__ == "__main__":
+    main()

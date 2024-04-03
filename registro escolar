@@ -1,0 +1,12 @@
+{
+    "livros": [],
+    "alunos": [
+        {
+            "nome": "fsdfsd",
+            "rg": "456456",
+            "cpf": "54646",
+            "telefone": "5455",
+            "ru_escola": "545"
+        }
+    ]
+}
